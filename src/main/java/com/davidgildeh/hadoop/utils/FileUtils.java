@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -122,8 +120,9 @@ public class FileUtils {
         
         Properties propFile = loadPropertiesFile(path);
         PropertyConfigurator.configure(propFile);
-    }    
-    
+        LOG.info("Loaded custom Log4J settings from " + path);
+    }
+        
     /**
      * Delete a file on HDFS
      * 
