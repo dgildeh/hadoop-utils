@@ -23,6 +23,7 @@ import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +51,7 @@ public class SimpleDBDAO {
     
     private final AmazonSimpleDB sdb;
     private final String sdb_domain;
-    private final String whereQuery;
+    private String whereQuery;
     
     /**
      * Default Constructor, initialises SimpleDB Client
@@ -157,6 +158,15 @@ public class SimpleDBDAO {
      */
     public String getWhereQuery() {
         return this.whereQuery;
+    }
+    
+    /**
+     * Set the current Where Query or null to clear it
+     * 
+     * @param whereQuery    Where Query to set
+     */
+    public void setWhereQuery(String whereQuery) {
+        this.whereQuery = whereQuery;
     }
     
     /**
@@ -270,6 +280,55 @@ public class SimpleDBDAO {
         }
 
         return items;
+    }
+    
+    /**
+     * Select a list of unique results as Hashmap. The field will specify which 
+     * field to return all unique results for, and the HashMap value for that field
+     * will contain a count of how many times that field value occurred in the results
+     * 
+     * @param field     The field name to get unique results for
+     * @return          A HashMap of unique results with a count of how many times they
+     *                  occur in the result set
+     */
+    public HashMap<String, Integer> doSelectUniqueQuery(final String field) {
+        
+        HashMap<String, Integer> uniqueResults = new HashMap<String, Integer>();
+        SelectResult results = doQuery(createQuery(false, -1), null);
+        int totalCount = 0;
+        
+        while ((results.getNextToken() != null)) {
+
+            for (Item item : results.getItems()) {
+
+                for (Attribute attribute : item.getAttributes()) {
+
+                    // Check if the result is unique
+                    if (attribute.getName().equals(field)) {
+                        final String value = attribute.getValue();
+                        
+                        if (! uniqueResults.containsKey(value)) {
+                            
+                            uniqueResults.put(value, 1);
+                            
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug(String.valueOf(++totalCount) + " - " + value);
+                            }
+                            
+                        } else {
+                            Integer count = uniqueResults.get(value);
+                            uniqueResults.put(value, ++count);
+                        }
+                    }  
+                }
+            }
+            
+            // Get next results
+            results = doQuery(createQuery(false, -1), results.getNextToken());
+        }
+        
+        // Return full list of unique results
+        return uniqueResults;
     }
     
     /**
