@@ -113,14 +113,26 @@ public class FileUtils {
      * custom properties file does not reset the existing log4J settings, only overrides
      * or appends to them.
      * 
+     * Will not do anything if Log4J is not provided in the classpath
+     * 
      * @param path          The path to the custom log4J properties file on HDFS
      * @throws IOException
      */
     public static void loadCustomLog4JSettings(String path) throws IOException {
         
-        Properties propFile = loadPropertiesFile(path);
-        PropertyConfigurator.configure(propFile);
-        LOG.info("Loaded custom Log4J settings from " + path);
+        try {
+            // Check Log4J exists on the classpath
+            Class.forName("org.apache.log4j.PropertyConfigurator");
+            
+            // If it is, load custom Log4J Settings
+            Properties propFile = loadPropertiesFile(path);
+            PropertyConfigurator.configure(propFile);
+            LOG.info("Loaded custom Log4J settings from " + path);
+      
+        } catch(ClassNotFoundException e) {
+            // it does not exist on the classpath
+            LOG.info("Log4J is not in the classpath for this system.");
+        }    
     }
         
     /**
