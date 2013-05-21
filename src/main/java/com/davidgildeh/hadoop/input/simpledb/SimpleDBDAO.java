@@ -143,7 +143,6 @@ public class SimpleDBDAO {
             query += " LIMIT " + String.valueOf(limit);
         }
         
-        System.out.println("Query: " + query);
         if (LOG.isDebugEnabled()) {
             LOG.debug("Query: " + query);
         }

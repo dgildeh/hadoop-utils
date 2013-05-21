@@ -102,9 +102,7 @@ public class SimpleDBInputFormat  implements InputFormat<Text, MapWritable> {
         if (splitSize < totalItems) {
             totalSplits = totalItems / splitSize;
         }
-        
-        System.out.println("Total Rows:" + String.valueOf(totalItems));
-        System.out.println("Total Splits: " + String.valueOf(totalSplits));
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Total Rows:" + String.valueOf(totalItems));
             LOG.debug("Total Splits:" + String.valueOf(totalSplits));
@@ -126,7 +124,6 @@ public class SimpleDBInputFormat  implements InputFormat<Text, MapWritable> {
             SimpleDBInputSplit split = new SimpleDBInputSplit(startRow, endRow, splitToken);
             splits.add(split);
             
-            System.out.println("Created Split: " + split.toString());
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Created Split: " + split.toString());
             }

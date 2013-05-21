@@ -84,8 +84,7 @@ public class SimpleDBRecordReader implements RecordReader<Text, MapWritable> {
             for (Attribute attribute : item.getAttributes()) {
                 value.put(new Text(attribute.getName()), new Text(attribute.getValue()));
             }
-               
-            System.out.println("Sending next record to Mappers: " + key.toString());
+            
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Sending next record to Mappers: " + key.toString());                
             }

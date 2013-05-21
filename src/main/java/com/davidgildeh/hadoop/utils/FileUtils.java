@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -30,6 +32,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.mapred.JobConf;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * Utility class that provides simple methods for accessing files on the Hadoop
@@ -105,6 +108,21 @@ public class FileUtils {
         
         return jobConf;
     }
+    
+    /**
+     * Utility method to load a custom log4J properties file on HDFS. This allows
+     * you to override logging levels in classes of your app. Note that loading a
+     * custom properties file does not reset the existing log4J settings, only overrides
+     * or appends to them.
+     * 
+     * @param path          The path to the custom log4J properties file on HDFS
+     * @throws IOException
+     */
+    public static void loadCustomLog4JSettings(String path) throws IOException {
+        
+        Properties propFile = loadPropertiesFile(path);
+        PropertyConfigurator.configure(propFile);
+    }    
     
     /**
      * Delete a file on HDFS
